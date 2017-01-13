@@ -1,0 +1,16 @@
+<body></body>
+<script src="trace.js"></script>
+<script>
+
+function tick() {
+  renderer.next();
+  requestAnimationFrame(tick);
+}
+
+var canvas = document.createElement('canvas');
+var gl = canvas.getContext('experimental-webgl');
+var renderer = render(gl);
+requestAnimationFrame(tick);
+document.body.appendChild(canvas);
+
+</script>
