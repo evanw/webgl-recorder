@@ -88,7 +88,7 @@
 
               if (frameSincePageLoad !== oldFrameCount) {
                 oldFrameCount = frameSincePageLoad;
-                trace.push('  yield null;');
+                trace.push('  yield;');
               }
 
               if (canvas.width !== oldWidth || canvas.height !== oldHeight) {
