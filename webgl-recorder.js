@@ -13,16 +13,16 @@
   };
 
   HTMLCanvasElement.prototype.getContext = function(type) {
-    var canvas = this;
-    var context = getContext.apply(canvas, arguments);
+    const canvas = this;
+    const context = getContext.apply(canvas, arguments);
 
     if (type === 'webgl' || type === 'experimental-webgl') {
-      var oldWidth = canvas.width;
-      var oldHeight = canvas.height;
-      var oldFrameCount = frameSincePageLoad;
-      var trace = [];
-      var variables = {};
-      var fakeContext = {
+      let oldWidth = canvas.width;
+      let oldHeight = canvas.height;
+      let oldFrameCount = frameSincePageLoad;
+      const trace = [];
+      const variables = {};
+      let fakeContext = {
         trace: trace,
         compileTrace: compileTrace,
         downloadTrace: downloadTrace,
@@ -32,10 +32,10 @@
       trace.push('  gl.canvas.height = ' + oldHeight + ';');
 
       function compileTrace() {
-        var text = 'function* render(gl) {\n';
+        let text = 'function* render(gl) {\n';
         text += '  // Recorded using https://github.com/evanw/webgl-recorder\n';
-        for (var key in variables) {
-          text += '  var ' + key + 's = [];\n';
+        for (let key in variables) {
+          text += '  const ' + key + 's = [];\n';
         }
         text += trace.join('\n');
         text += '\n}\n';
@@ -43,8 +43,8 @@
       }
 
       function downloadTrace() {
-        var text = compileTrace();
-        var link = document.createElement('a');
+        const text = compileTrace();
+        const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([text], {type: 'application/javascript'}));
         link.download = 'trace.js';
         document.body.appendChild(link);
@@ -62,9 +62,9 @@
             value instanceof WebGLShaderPrecisionFormat ||
             value instanceof WebGLTexture ||
             value instanceof WebGLUniformLocation) {
-          var name = value.constructor.name;
-          var list = variables[name] || (variables[name] = []);
-          var index = list.indexOf(value);
+          const name = value.constructor.name;
+          const list = variables[name] || (variables[name] = []);
+          let index = list.indexOf(value);
 
           if (index === -1) {
             index = list.length;
@@ -77,14 +77,14 @@
         return null;
       }
 
-      for (var key in context) {
-        var value = context[key];
+      for (const key in context) {
+        const value = context[key];
 
         if (typeof value === 'function') {
           fakeContext[key] = function(key, value) {
             return function() {
-              var result = value.apply(context, arguments);
-              var args = [];
+              const result = value.apply(context, arguments);
+              const args = [];
 
               if (frameSincePageLoad !== oldFrameCount) {
                 oldFrameCount = frameSincePageLoad;
@@ -98,8 +98,8 @@
                 trace.push('  gl.canvas.height = ' + oldHeight + ';');
               }
 
-              for (var i = 0; i < arguments.length; i++) {
-                var arg = arguments[i];
+              for (let i = 0; i < arguments.length; i++) {
+                const arg = arguments[i];
 
                 if (typeof arg === 'number' || typeof arg === 'boolean' || typeof arg === 'string' || arg === null) {
                   args.push(JSON.stringify(arg));
@@ -110,7 +110,7 @@
                 }
 
                 else {
-                  var variable = getVariable(arg);
+                  const variable = getVariable(arg);
                   if (variable !== null) {
                     args.push(variable);
                   }
@@ -122,8 +122,8 @@
                 }
               }
 
-              var text = 'gl.' + key + '(' + args.join(', ') + ');';
-              var variable = getVariable(result);
+              let text = 'gl.' + key + '(' + args.join(', ') + ');';
+              const variable = getVariable(result);
               if (variable !== null) text = variable + ' = ' + text;
               trace.push('  ' + text);
 
