@@ -64,7 +64,7 @@
             value instanceof WebGLUniformLocation ||
             value instanceof WebGLVertexArrayObject ||
             // In Chrome, value won't be an instanceof WebGLVertexArrayObject.
-            (value && value.constructor.name === "WebGLVertexArrayObjectOES") ||
+            (value && value.constructor.name == "WebGLVertexArrayObjectOES") ||
             typeof value === 'object') {
           const name = value.constructor.name;
           const list = variables[name] || (variables[name] = []);
