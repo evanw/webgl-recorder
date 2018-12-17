@@ -22,11 +22,6 @@
       let oldFrameCount = frameSincePageLoad;
       const trace = [];
       const variables = {};
-      let fakeContext = {
-        trace: trace,
-        compileTrace: compileTrace,
-        downloadTrace: downloadTrace,
-      };
 
       trace.push('  gl.canvas.width = ' + oldWidth + ';');
       trace.push('  gl.canvas.height = ' + oldHeight + ';');
@@ -81,14 +76,13 @@
         return null;
       }
 
-      for (const key in context) {
-        const value = context[key];
-
-        if (typeof value === 'function') {
-          fakeContext[key] = function(key, value) {
-            return function() {
-              const result = value.apply(context, arguments);
-              const args = [];
+      function patch(name, object) {
+        const patched = {};
+        for (const key in object) {
+          const value = object[key];
+          if (typeof value === 'function') {
+            patched[key] = function () {
+              const result = value.apply(object, arguments);
 
               if (frameSincePageLoad !== oldFrameCount) {
                 oldFrameCount = frameSincePageLoad;
@@ -126,21 +120,39 @@
                 }
               }
 
-              let text = 'gl.' + key + '(' + args.join(', ') + ');';
+              let text = `${name}.${key}(${args.join(', ')});`;
               const variable = getVariable(result);
               if (variable !== null) text = variable + ' = ' + text;
               trace.push('  ' + text);
 
+              if (result === null) return null;
+              if (result === undefined) return undefined;
+              // In Firefox, getExtension returns things with constructor.name == 'Object', but in
+              // Chrome getExtension returns unique constructor.names.
+              if (result.constructor.name === 'Object' || key == 'getExtension') {
+                return patch(variable, result);
+              }
               return result;
             };
-          }(key, value);
+          } else { // typeof value !== function
+            Object.defineProperty(patched, key, {
+              configurable: false,
+              enumerable: true,
+              get() {
+                return object[key];
+              }
+            });
+          }
         }
-
-        else {
-          fakeContext[key] = value;
-        }
+        return patched;
       }
 
+      const fakeContext = patch('gl', context);
+      Object.assign(fakeContext, {
+        trace: trace,
+        compileTrace: compileTrace,
+        downloadTrace: downloadTrace,
+      });
       return fakeContext;
     }
 
