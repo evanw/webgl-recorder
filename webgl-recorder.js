@@ -61,7 +61,11 @@
             value instanceof WebGLShader ||
             value instanceof WebGLShaderPrecisionFormat ||
             value instanceof WebGLTexture ||
-            value instanceof WebGLUniformLocation) {
+            value instanceof WebGLUniformLocation ||
+            value instanceof WebGLVertexArrayObject ||
+            // In Chrome, value won't be an instanceof WebGLVertexArrayObject.
+            (value && value.constructor.name === "WebGLVertexArrayObjectOES") ||
+            typeof value === 'object') {
           const name = value.constructor.name;
           const list = variables[name] || (variables[name] = []);
           let index = list.indexOf(value);
