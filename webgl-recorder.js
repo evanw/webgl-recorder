@@ -102,7 +102,7 @@
                 }
 
                 else if (ArrayBuffer.isView(arg)) {
-                  return 'new ' + arg.constructor.name + '([' + Array.prototype.slice.call(arg) + '])';
+                  return `new ${arg.constructor.name}([${Array.prototype.slice.call(arg)}])`;
                 }
 
                 else {
@@ -120,7 +120,7 @@
 
               let text = `${name}.${key}(${args.join(', ')});`;
               const variable = getVariable(result);
-              if (variable !== null) text = variable + ' = ' + text;
+              if (variable !== null) text = `${variable} = ${text}`;
               trace.push('  ' + text);
 
               if (result === null) return null;
