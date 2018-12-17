@@ -112,7 +112,7 @@
                   }
 
                   else {
-                    console.warn('unsupported value:', arg);
+                    console.warn('unsupported value:', arg, `in call to ${name}.${key}`);
                     return 'null';
                   }
                 }
