@@ -99,19 +99,13 @@
               const args = Array.prototype.map.call(arguments, arg => {
                 if (typeof arg === 'number' || typeof arg === 'boolean' || typeof arg === 'string' || arg === null) {
                   return JSON.stringify(arg);
-                }
-
-                else if (ArrayBuffer.isView(arg)) {
+                } else if (ArrayBuffer.isView(arg)) {
                   return `new ${arg.constructor.name}([${Array.prototype.slice.call(arg)}])`;
-                }
-
-                else {
+                } else {
                   const variable = getVariable(arg);
                   if (variable !== null) {
                     return variable;
-                  }
-
-                  else {
+                  } else {
                     console.warn('unsupported value:', arg, `in call to ${name}.${key}`);
                     return 'null';
                   }
