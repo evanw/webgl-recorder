@@ -96,29 +96,27 @@
                 trace.push('  gl.canvas.height = ' + oldHeight + ';');
               }
 
-              for (let i = 0; i < arguments.length; i++) {
-                const arg = arguments[i];
-
+              const args = Array.prototype.map.call(arguments, arg => {
                 if (typeof arg === 'number' || typeof arg === 'boolean' || typeof arg === 'string' || arg === null) {
-                  args.push(JSON.stringify(arg));
+                  return JSON.stringify(arg);
                 }
 
                 else if (ArrayBuffer.isView(arg)) {
-                  args.push('new ' + arg.constructor.name + '([' + Array.prototype.slice.call(arg) + '])');
+                  return 'new ' + arg.constructor.name + '([' + Array.prototype.slice.call(arg) + '])';
                 }
 
                 else {
                   const variable = getVariable(arg);
                   if (variable !== null) {
-                    args.push(variable);
+                    return variable;
                   }
 
                   else {
                     console.warn('unsupported value:', arg);
-                    args.push('null');
+                    return 'null';
                   }
                 }
-              }
+              });
 
               let text = `${name}.${key}(${args.join(', ')});`;
               const variable = getVariable(result);
