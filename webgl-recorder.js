@@ -98,11 +98,15 @@
                 trace.push('  gl.canvas.height = ' + oldHeight + ';');
               }
 
-              const args = Array.prototype.map.call(arguments, arg => {
+              const argToCode = arg => {
                 if (typeof arg === 'number' || typeof arg === 'boolean' || typeof arg === 'string' || arg === null) {
                   return JSON.stringify(arg);
                 } else if (ArrayBuffer.isView(arg)) {
                   return `new ${arg.constructor.name}([${Array.prototype.slice.call(arg)}])`;
+                } else if (arg instanceof ArrayBuffer) {
+                  return `new Uint8Array([${new Uint8Array(arg)}]).buffer`;
+                } else if (Array.isArray(arg)) {
+                  return `[${arg.map(argToCode).join(',')}]`;
                 } else {
                   const variable = getVariable(arg);
                   if (variable !== null) {
@@ -112,7 +116,8 @@
                     return 'null';
                   }
                 }
-              });
+              };
+              const args = Array.prototype.map.call(arguments, argToCode);
 
               let text = `${name}.${key}(${args.join(', ')});`;
               const variable = getVariable(result);
