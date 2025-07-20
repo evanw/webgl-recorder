@@ -1,4 +1,4 @@
-(function() {
+(function () {
   var getContext = HTMLCanvasElement.prototype.getContext;
   var requestAnimationFrame = window.requestAnimationFrame;
   var frameSincePageLoad = 0;
@@ -8,11 +8,11 @@
     requestAnimationFrame(countFrames);
   }
 
-  window.requestAnimationFrame = function() {
+  window.requestAnimationFrame = function () {
     return requestAnimationFrame.apply(window, arguments);
   };
 
-  HTMLCanvasElement.prototype.getContext = function(type) {
+  HTMLCanvasElement.prototype.getContext = function (type) {
     const canvas = this;
     const context = getContext.apply(canvas, arguments);
 
@@ -40,7 +40,7 @@
       function downloadTrace() {
         const text = compileTrace();
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(new Blob([text], {type: 'application/javascript'}));
+        link.href = URL.createObjectURL(new Blob([text], { type: 'application/javascript' }));
         link.download = 'trace.js';
         document.body.appendChild(link);
         link.click();
@@ -48,19 +48,21 @@
       }
 
       function getVariable(value) {
-        if (value instanceof WebGLActiveInfo ||
-            value instanceof WebGLBuffer ||
-            value instanceof WebGLFramebuffer ||
-            value instanceof WebGLProgram ||
-            value instanceof WebGLRenderbuffer ||
-            value instanceof WebGLShader ||
-            value instanceof WebGLShaderPrecisionFormat ||
-            value instanceof WebGLTexture ||
-            value instanceof WebGLUniformLocation ||
-            value instanceof WebGLVertexArrayObject ||
-            // In Chrome, value won't be an instanceof WebGLVertexArrayObject.
-            (value && value.constructor.name == "WebGLVertexArrayObjectOES") ||
-            typeof value === 'object') {
+        if (
+          value instanceof WebGLActiveInfo ||
+          value instanceof WebGLBuffer ||
+          value instanceof WebGLFramebuffer ||
+          value instanceof WebGLProgram ||
+          value instanceof WebGLRenderbuffer ||
+          value instanceof WebGLShader ||
+          value instanceof WebGLShaderPrecisionFormat ||
+          value instanceof WebGLTexture ||
+          value instanceof WebGLUniformLocation ||
+          value instanceof WebGLVertexArrayObject ||
+          // In Chrome, value won't be an instanceof WebGLVertexArrayObject.
+          (value && value.constructor.name == "WebGLVertexArrayObjectOES") ||
+          typeof value === 'object'
+        ) {
           const name = value.constructor.name;
           const list = variables[name] || (variables[name] = []);
           let index = list.indexOf(value);
